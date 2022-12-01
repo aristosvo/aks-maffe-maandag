@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "10952492834890309724"
+      "templateHash": "1800569532507344449"
     }
   },
   "parameters": {
@@ -245,15 +245,15 @@
               {
                 "helmRepo": "ingress-nginx",
                 "helmRepoURL": "https://kubernetes.github.io/ingress-nginx",
-                "helmApp": "ingress-nginx/ingress-nginx",
-                "helmAppName": "ingress-nginx",
+                "helmApp": "ingress-nginx",
+                "helmAppName": "ingress-nginx/ingress-nginx",
                 "helmParams": "--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local"
               },
               {
                 "helmRepo": "jetstack",
                 "helmRepoURL": "https://charts.jetstack.io",
-                "helmApp": "jetstack/cert-manager",
-                "helmAppName": "cert-manager",
+                "helmApp": "cert-manager",
+                "helmAppName": "jetstack/cert-manager",
                 "helmParams": "--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true"
               }
             ]
