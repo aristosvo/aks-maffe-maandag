@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "9065821491977937498"
+      "templateHash": "4839667506724389901"
     }
   },
   "parameters": {
@@ -95,16 +95,35 @@
       "metadata": {
         "description": "Public Helm App Name"
       }
+    },
+    "containerRegistryName": {
+      "type": "string",
+      "defaultValue": "acr-maffe-maandag",
+      "metadata": {
+        "description": "The name of our container registry"
+      }
     }
   },
+  "variables": {
+    "acrPullRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+  },
   "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2022-01-31-preview",
+      "name": "id-maffe-maandag",
+      "location": "[parameters('location')]"
+    },
     {
       "type": "Microsoft.ContainerService/managedClusters",
       "apiVersion": "2020-09-01",
       "name": "[parameters('clusterName')]",
       "location": "[parameters('location')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag'))]": {}
+        }
       },
       "properties": {
         "dnsPrefix": "[parameters('dnsPrefix')]",
@@ -118,7 +137,93 @@
             "mode": "System"
           }
         ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag')]"
+      ]
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[parameters('containerRegistryName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "adminUserEnabled": true
       }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('containerRegistryName'))]",
+      "name": "[guid(resourceGroup().id, resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), variables('acrPullRoleDefinitionId'))]",
+      "properties": {
+        "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]",
+        "roleDefinitionId": "[variables('acrPullRoleDefinitionId')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
+        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "dns",
+      "resourceGroup": "dns",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "kubeletidentityObjectId": {
+            "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "7317514902028164465"
+            }
+          },
+          "parameters": {
+            "kubeletidentityObjectId": {
+              "type": "string",
+              "defaultValue": ""
+            }
+          },
+          "variables": {
+            "dnsZoneContributorRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'befefa01-2a29-4197-83a8-272ff33ce314')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Network/dnsZones/{0}', 'maffe-maandag.nl')]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Network/dnsZones', 'maffe-maandag.nl'), variables('dnsZoneContributorRoleDefinitionId'))]",
+              "properties": {
+                "principalId": "[parameters('kubeletidentityObjectId')]",
+                "roleDefinitionId": "[variables('dnsZoneContributorRoleDefinitionId')]",
+                "principalType": "ServicePrincipal"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -307,6 +412,10 @@
     }
   ],
   "outputs": {
+    "kubeletIdentityClientId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.clientId]"
+    },
     "controlPlaneFQDN": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').fqdn]"
