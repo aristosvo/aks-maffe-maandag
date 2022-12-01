@@ -20,30 +20,11 @@ param agentCount int = 1
 @description('The size of the Virtual Machine.')
 param agentVMSize string = 'Standard_D2s_v3'
 
-// @description('User name for the Linux Virtual Machines.')
-// param linuxAdminUsername string
-
-// @description('Configure all linux machines with the SSH RSA public key string. Your key should include three parts, for example \'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm\'')
-// param sshRSAPublicKey string
-
-@description('The base URI where artifacts required by this template are located')
-param _artifactsLocation string = deployment().properties.templateLink.uri
-
-@description('The sasToken required to access artifacts')
-@secure()
-param _artifactsLocationSasToken string = ''
-
-@description('Public Helm Repo Name')
-param helmRepo string = 'azure-marketplace'
-
-@description('Public Helm Repo URL')
-param helmRepoURL string = 'https://marketplace.azurecr.io/helm/v1/repo'
-
-@description('Public Helm App')
-param helmApp string = 'azure-marketplace/wordpress'
-
-@description('Public Helm App Name')
-param helmAppName string = 'my-wordpress'
+@description('An array of Azure RoleIds that are required for the DeploymentScript resource')
+param rbacRolesNeeded array = [
+  'b24988ac-6180-42a0-ab88-20f7382dd24c' //Contributor
+  '7f6c6a51-bcf8-42ba-9220-52d62157d7db' //Azure Kubernetes Service RBAC Reader
+]
 
 resource aksidentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2022-01-31-preview' = {
   location: location
@@ -72,21 +53,11 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-09-01' = {
         mode: 'System'
       }
     ]
-    // linuxProfile: {
-    //   adminUsername: linuxAdminUsername
-    //   ssh: {
-    //     publicKeys: [
-    //       {
-    //         keyData: sshRSAPublicKey
-    //       }
-    //     ]
-    //   }
-    // }
   }
 }
 
 @description('The name of our container registry')
-param containerRegistryName string = 'acr-maffe-maandag'
+param containerRegistryName string = 'maffemaandag'
 resource acr 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
   name: containerRegistryName
   location: location
@@ -120,17 +91,44 @@ module dns 'modules/dns.bicep' = {
   }
 }
 
-module helm 'modules/helm.bicep' = {
-  name: 'HelmScripts'
+resource aksrunid 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: 'id-run-maffe-maandag'
+  location: location
+}
+
+resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
+  name: guid(aks.id, roleDefId, aksrunid.id)
+  scope: aks
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
+    principalId: aksrunid.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}]
+
+module runCmd 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
+  name: 'kubectlGetNodes'
   params: {
+    useExistingManagedIdentity: true
+    managedIdentityName: aksrunid.name
+    aksName: aks.name
     location: location
-    _artifactsLocation: _artifactsLocation
-    _artifactsLocationSasToken: _artifactsLocationSasToken
-    clusterName: clusterName
-    helmRepo: helmRepo
-    helmRepoURL: helmRepoURL
-    helmApp: helmApp
-    helmAppName: helmAppName
+    helmApps: [
+      {
+        helmRepo: 'ingress-nginx'
+        helmRepoURL: 'https://kubernetes.github.io/ingress-nginx'
+        helmApp: 'ingress-nginx/ingress-nginx'
+        helmAppName: 'ingress-nginx'
+        helmParams: '--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local'
+      }
+      {
+        helmRepo: 'jetstack'
+        helmRepoURL: 'https://charts.jetstack.io'
+        helmApp: 'jetstack/cert-manager'
+        helmAppName: 'cert-manager'
+        helmParams: '--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true'
+      }
+    ]
   }
 }
 
