@@ -20,7 +20,7 @@ helm repo add \
 helm search repo \
     $HELM_REPO
 
-helm install \
+helm upgrade -i \
     $HELM_APP_NAME \
     $HELM_APP \
     --set global.imagePullSecrets={emptysecret}
