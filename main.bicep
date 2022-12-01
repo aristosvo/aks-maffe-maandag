@@ -119,7 +119,7 @@ module ingress 'modules/helm.bicep' = {
       {
         helmAppName: 'ingress-nginx'
         helmApp: 'ingress-nginx/ingress-nginx'
-        helmParams: '--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local'
+        helmAppParams: '--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local'
       }
     ]
   }
@@ -138,7 +138,7 @@ module certmanager 'modules/helm.bicep' = {
       {
         helmAppName: 'cert-manager'
         helmApp: 'jetstack/cert-manager'
-        helmParams: '--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true'
+        helmAppParams: '--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true'
       }
     ]
   }
