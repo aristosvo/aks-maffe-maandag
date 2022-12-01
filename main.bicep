@@ -1,5 +1,5 @@
 @description('The name of the Managed Cluster resource.')
-param clusterName string = 'aks101clusterMM'
+param clusterName string = 'aks-maffe-maandag'
 
 @description('The location of the Managed Cluster resource.')
 param location string = resourceGroup().location
@@ -15,7 +15,7 @@ param osDiskSizeGB int = 0
 @description('The number of nodes for the cluster.')
 @minValue(1)
 @maxValue(50)
-param agentCount int = 3
+param agentCount int = 1
 
 @description('The size of the Virtual Machine.')
 param agentVMSize string = 'Standard_D2s_v3'

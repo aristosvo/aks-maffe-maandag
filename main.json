@@ -5,13 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "4839667506724389901"
+      "templateHash": "15472899511942001303"
     }
   },
   "parameters": {
     "clusterName": {
       "type": "string",
-      "defaultValue": "aks101clusterMM",
+      "defaultValue": "aks-maffe-maandag",
       "metadata": {
         "description": "The name of the Managed Cluster resource."
       }
@@ -40,7 +40,7 @@
     },
     "agentCount": {
       "type": "int",
-      "defaultValue": 3,
+      "defaultValue": 1,
       "maxValue": 50,
       "minValue": 1,
       "metadata": {

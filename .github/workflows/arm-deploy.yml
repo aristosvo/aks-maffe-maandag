@@ -2,15 +2,15 @@ name: Build and deploy Bicep config
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
-   id-token: write
-   contents: read
+  id-token: write
+  contents: read
 
 env:
-  RESOURCE_GROUP: "aks-maffe-maandag"
-  DNS_PREFIX: "aksMaffeMaandag"
+  RESOURCE_GROUP: "rg-maffe-maandag"
+  DNS_PREFIX: "zapigezondag"
 
 jobs:
   build:
@@ -34,5 +34,3 @@ jobs:
       - name: Deploy Bicep config
         run: |
           az deployment group create --resource-group ${{ env.RESOURCE_GROUP }} --template-uri https://raw.githubusercontent.com/aristosvo/aks-maffe-maandag/main/main.json -p dnsPrefix=${{ env.DNS_PREFIX }}
-
-
