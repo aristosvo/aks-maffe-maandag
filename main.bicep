@@ -106,24 +106,36 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDe
   }
 }]
 
-module runCmd 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
-  name: 'kubectlGetNodes'
+module ingress 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
+  name: 'ingress'
   params: {
     useExistingManagedIdentity: true
     managedIdentityName: aksrunid.name
     aksName: aks.name
     location: location
+    helmRepo: 'ingress-nginx'
+    helmRepoURL: 'https://kubernetes.github.io/ingress-nginx'
     helmApps: [
       {
-        helmRepo: 'ingress-nginx'
-        helmRepoURL: 'https://kubernetes.github.io/ingress-nginx'
         helmAppName: 'ingress-nginx'
         helmApp: 'ingress-nginx/ingress-nginx'
         helmParams: '--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local'
       }
+    ]
+  }
+}
+
+module certmanager 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
+  name: 'certmanager'
+  params: {
+    useExistingManagedIdentity: true
+    managedIdentityName: aksrunid.name
+    aksName: aks.name
+    location: location
+    helmRepo: 'jetstack'
+    helmRepoURL: 'https://charts.jetstack.io'
+    helmApps: [
       {
-        helmRepo: 'jetstack'
-        helmRepoURL: 'https://charts.jetstack.io'
         helmAppName: 'cert-manager'
         helmApp: 'jetstack/cert-manager'
         helmParams: '--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true'
