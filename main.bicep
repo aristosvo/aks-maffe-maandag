@@ -106,7 +106,7 @@ resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDe
   }
 }]
 
-module ingress 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
+module ingress 'modules/helm.bicep' = {
   name: 'ingress'
   params: {
     useExistingManagedIdentity: true
@@ -125,7 +125,7 @@ module ingress 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
   }
 }
 
-module certmanager 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
+module certmanager 'modules/helm.bicep' = {
   name: 'certmanager'
   params: {
     useExistingManagedIdentity: true

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "156769595582946431"
+      "templateHash": "12182060567903965167"
     }
   },
   "parameters": {
@@ -262,8 +262,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.9.1.41621",
-              "templateHash": "2465942561230693956"
+              "version": "0.12.40.16777",
+              "templateHash": "16688079330702350385"
             }
           },
           "parameters": {
@@ -373,7 +373,7 @@
                   "commands": {
                     "value": [
                       "[format('helm repo add {0} {1}; helm repo update', parameters('helmRepo'), parameters('helmRepoURL'))]",
-                      "[format('helm upgrade --install  {0} {1} {2}', parameters('helmApps')[copyIndex()].helmApp, parameters('helmApps')[copyIndex()].helmAppName, if(contains(parameters('helmApps')[copyIndex()], 'helmAppParams'), parameters('helmApps')[copyIndex()].helmAppParams, ''))]"
+                      "[format('helm upgrade --install {0} {1} {2}', parameters('helmApps')[copyIndex()].helmAppName, parameters('helmApps')[copyIndex()].helmApp, if(contains(parameters('helmApps')[copyIndex()], 'helmAppParams'), parameters('helmApps')[copyIndex()].helmAppParams, ''))]"
                     ]
                   },
                   "forceUpdateTag": {
@@ -641,8 +641,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.9.1.41621",
-              "templateHash": "2465942561230693956"
+              "version": "0.12.40.16777",
+              "templateHash": "16688079330702350385"
             }
           },
           "parameters": {
@@ -752,7 +752,7 @@
                   "commands": {
                     "value": [
                       "[format('helm repo add {0} {1}; helm repo update', parameters('helmRepo'), parameters('helmRepoURL'))]",
-                      "[format('helm upgrade --install  {0} {1} {2}', parameters('helmApps')[copyIndex()].helmApp, parameters('helmApps')[copyIndex()].helmAppName, if(contains(parameters('helmApps')[copyIndex()], 'helmAppParams'), parameters('helmApps')[copyIndex()].helmAppParams, ''))]"
+                      "[format('helm upgrade --install {0} {1} {2}', parameters('helmApps')[copyIndex()].helmAppName, parameters('helmApps')[copyIndex()].helmApp, if(contains(parameters('helmApps')[copyIndex()], 'helmAppParams'), parameters('helmApps')[copyIndex()].helmAppParams, ''))]"
                     ]
                   },
                   "forceUpdateTag": {
