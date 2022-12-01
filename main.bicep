@@ -20,11 +20,11 @@ param agentCount int = 3
 @description('The size of the Virtual Machine.')
 param agentVMSize string = 'Standard_D2s_v3'
 
-@description('User name for the Linux Virtual Machines.')
-param linuxAdminUsername string
+// @description('User name for the Linux Virtual Machines.')
+// param linuxAdminUsername string
 
-@description('Configure all linux machines with the SSH RSA public key string. Your key should include three parts, for example \'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm\'')
-param sshRSAPublicKey string
+// @description('Configure all linux machines with the SSH RSA public key string. Your key should include three parts, for example \'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm\'')
+// param sshRSAPublicKey string
 
 @description('The base URI where artifacts required by this template are located')
 param _artifactsLocation string = deployment().properties.templateLink.uri
@@ -63,16 +63,16 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-09-01' = {
         mode: 'System'
       }
     ]
-    linuxProfile: {
-      adminUsername: linuxAdminUsername
-      ssh: {
-        publicKeys: [
-          {
-            keyData: sshRSAPublicKey
-          }
-        ]
-      }
-    }
+    // linuxProfile: {
+    //   adminUsername: linuxAdminUsername
+    //   ssh: {
+    //     publicKeys: [
+    //       {
+    //         keyData: sshRSAPublicKey
+    //       }
+    //     ]
+    //   }
+    // }
   }
 }
 

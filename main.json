@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "13641799719022975096"
+      "templateHash": "9065821491977937498"
     }
   },
   "parameters": {
@@ -52,18 +52,6 @@
       "defaultValue": "Standard_D2s_v3",
       "metadata": {
         "description": "The size of the Virtual Machine."
-      }
-    },
-    "linuxAdminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "User name for the Linux Virtual Machines."
-      }
-    },
-    "sshRSAPublicKey": {
-      "type": "string",
-      "metadata": {
-        "description": "Configure all linux machines with the SSH RSA public key string. Your key should include three parts, for example 'ssh-rsa AAAAB...snip...UcyupgH azureuser@linuxvm'"
       }
     },
     "_artifactsLocation": {
@@ -129,17 +117,7 @@
             "osType": "Linux",
             "mode": "System"
           }
-        ],
-        "linuxProfile": {
-          "adminUsername": "[parameters('linuxAdminUsername')]",
-          "ssh": {
-            "publicKeys": [
-              {
-                "keyData": "[parameters('sshRSAPublicKey')]"
-              }
-            ]
-          }
-        }
+        ]
       }
     },
     {
