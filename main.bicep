@@ -117,15 +117,15 @@ module runCmd 'br/public:deployment-scripts/aks-run-helm:1.0.1' = {
       {
         helmRepo: 'ingress-nginx'
         helmRepoURL: 'https://kubernetes.github.io/ingress-nginx'
-        helmApp: 'ingress-nginx'
-        helmAppName: 'ingress-nginx/ingress-nginx'
+        helmAppName: 'ingress-nginx'
+        helmApp: 'ingress-nginx/ingress-nginx'
         helmParams: '--version 4.4.0 --namespace ingress --create-namespace --set controller.service.externalTrafficPolicy=Local'
       }
       {
         helmRepo: 'jetstack'
         helmRepoURL: 'https://charts.jetstack.io'
-        helmApp: 'cert-manager'
-        helmAppName: 'jetstack/cert-manager'
+        helmAppName: 'cert-manager'
+        helmApp: 'jetstack/cert-manager'
         helmParams: '--version v1.10.1 --namespace cert-manager --create-namespace --set installCRDs=true'
       }
     ]
