@@ -35,7 +35,7 @@ jobs:
           echo EXIT_SUCCESS=0 >> $GITHUB_ENV
 
       - name: test
-        if: EXIT_SUCCESS != '0'
+        if: ${{ env.EXIT_SUCCESS != '0' }}
         uses: actions/github-script@v3
         with:
           script: |
@@ -50,14 +50,14 @@ jobs:
           echo EXIT_SUCCESS=0 >> $GITHUB_ENV
       
       - name: Helm Chart Check cert-manager
-        if: EXIT_CERTMANAGER != '0'
+        if: ${{ env.EXIT_CERTMANAGER != '0' }}
         uses: actions/github-script@v3
         with:
           script: |
               core.setFailed('cert-manager Helm Chart deployment failed!')
 
       - name: Helm Chart Check ingress-nginx
-        if: EXIT_INGRESS != '0'
+        if: ${{ env.EXIT_INGRESS != '0' }}
         uses: actions/github-script@v3
         with:
           script: |
