@@ -144,6 +144,9 @@ module certmanager 'modules/helm.bicep' = {
   }
 }
 
+output certmanagerOutput array = certmanager.outputs.helmOutputs
+output ingressOutput array = ingress.outputs.helmOutputs
+
 output kubeletIdentityClientId string = aks.properties.identityProfile.kubeletidentity.clientId
 
 output controlPlaneFQDN string = aks.properties.fqdn

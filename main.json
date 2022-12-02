@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "7902615245684124612"
+      "templateHash": "16631931946413298166"
     }
   },
   "parameters": {
@@ -263,7 +263,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "17889908750769342776"
+              "templateHash": "3029187388790019340"
             }
           },
           "parameters": {
@@ -588,7 +588,19 @@
                 }
               }
             }
-          ]
+          ],
+          "outputs": {
+            "helmOutputs": {
+              "type": "array",
+              "copy": {
+                "count": "[length(parameters('helmApps'))]",
+                "input": {
+                  "appName": "[parameters('helmApps')[copyIndex()].helmAppName]",
+                  "outputs": "[reference(resourceId('Microsoft.Resources/deployments', format('helmInstall-{0}-{1}', parameters('helmApps')[copyIndex()].helmAppName, copyIndex())), '2020-10-01').outputs.commandOutput.value]"
+                }
+              }
+            }
+          }
         }
       },
       "dependsOn": [
@@ -641,7 +653,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "17889908750769342776"
+              "templateHash": "3029187388790019340"
             }
           },
           "parameters": {
@@ -966,7 +978,19 @@
                 }
               }
             }
-          ]
+          ],
+          "outputs": {
+            "helmOutputs": {
+              "type": "array",
+              "copy": {
+                "count": "[length(parameters('helmApps'))]",
+                "input": {
+                  "appName": "[parameters('helmApps')[copyIndex()].helmAppName]",
+                  "outputs": "[reference(resourceId('Microsoft.Resources/deployments', format('helmInstall-{0}-{1}', parameters('helmApps')[copyIndex()].helmAppName, copyIndex())), '2020-10-01').outputs.commandOutput.value]"
+                }
+              }
+            }
+          }
         }
       },
       "dependsOn": [
@@ -976,6 +1000,14 @@
     }
   ],
   "outputs": {
+    "certmanagerOutput": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'certmanager'), '2020-10-01').outputs.helmOutputs.value]"
+    },
+    "ingressOutput": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'ingress'), '2020-10-01').outputs.helmOutputs.value]"
+    },
     "kubeletIdentityClientId": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.clientId]"
