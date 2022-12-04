@@ -1,0 +1,17 @@
+{
+  "name": "Ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "VARIANT": "focal"
+    }
+  },
+  "extensions": [
+    "ms-azuretools.vscode-bicep",
+    "esbenp.prettier-vscode"
+  ],
+  "postStartCommand": "az bicep install",
+  "features": {
+    "azure-cli": "latest",
+  }
+}
