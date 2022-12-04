@@ -13,5 +13,6 @@
   "postStartCommand": "az bicep install",
   "features": {
     "azure-cli": "latest",
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
   }
 }
