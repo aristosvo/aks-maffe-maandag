@@ -62,7 +62,7 @@ resource acr 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
   name: containerRegistryName
   location: location
   sku: {
-    name: 'Standard'
+    name: 'Basic'
   }
   identity: {
     type: 'SystemAssigned'
@@ -143,6 +143,13 @@ module certmanager 'modules/helm.bicep' = {
     ]
   }
 }
+
+// module kubernetes './modules/kubernetes.bicep' = {
+//   name: 'kubernetes-deploy'
+//   params: {
+//     kubeConfig: aks.listClusterAdminCredential().kubeconfigs[0].value
+//   }
+// }
 
 output certmanagerOutput array = certmanager.outputs.helmOutputs
 
