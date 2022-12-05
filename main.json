@@ -1,11 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "languageVersion": "1.9-experimental",
   "contentVersion": "1.0.0.0",
   "metadata": {
+    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "16631931946413298166"
+      "templateHash": "8017017731437639706"
     }
   },
   "parameters": {
@@ -75,14 +77,14 @@
   "variables": {
     "acrPullRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
   },
-  "resources": [
-    {
+  "resources": {
+    "aksidentity": {
       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
       "apiVersion": "2022-01-31-preview",
       "name": "id-maffe-maandag",
       "location": "[parameters('location')]"
     },
-    {
+    "aks": {
       "type": "Microsoft.ContainerService/managedClusters",
       "apiVersion": "2020-09-01",
       "name": "[parameters('clusterName')]",
@@ -90,7 +92,7 @@
       "identity": {
         "type": "UserAssigned",
         "userAssignedIdentities": {
-          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag'))]": {}
+          "[format('{0}', resourceInfo('aksidentity').id)]": {}
         }
       },
       "properties": {
@@ -107,16 +109,16 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag')]"
+        "aksidentity"
       ]
     },
-    {
+    "acr": {
       "type": "Microsoft.ContainerRegistry/registries",
       "apiVersion": "2022-02-01-preview",
       "name": "[parameters('containerRegistryName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Standard"
+        "name": "Basic"
       },
       "identity": {
         "type": "SystemAssigned"
@@ -125,28 +127,28 @@
         "adminUserEnabled": true
       }
     },
-    {
+    "acrPullRole": {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('containerRegistryName'))]",
-      "name": "[guid(resourceGroup().id, resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), variables('acrPullRoleDefinitionId'))]",
+      "name": "[guid(resourceGroup().id, resourceInfo('aks').id, variables('acrPullRoleDefinitionId'))]",
       "properties": {
-        "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]",
+        "principalId": "[reference('aks').identityProfile.kubeletidentity.objectId]",
         "roleDefinitionId": "[variables('acrPullRoleDefinitionId')]",
         "principalType": "ServicePrincipal"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+        "acr",
+        "aks"
       ]
     },
-    {
+    "aksrunid": {
       "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
       "apiVersion": "2018-11-30",
       "name": "id-run-maffe-maandag",
       "location": "[parameters('location')]"
     },
-    {
+    "rbac": {
       "copy": {
         "name": "rbac",
         "count": "[length(parameters('rbacRolesNeeded'))]"
@@ -154,18 +156,18 @@
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('clusterName'))]",
-      "name": "[guid(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), parameters('rbacRolesNeeded')[copyIndex()], resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'))]",
+      "name": "[guid(resourceInfo('aks').id, parameters('rbacRolesNeeded')[copyIndex()], resourceInfo('aksrunid').id)]",
       "properties": {
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRolesNeeded')[copyIndex()])]",
-        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'), '2018-11-30').principalId]",
+        "principalId": "[reference('aksrunid').principalId]",
         "principalType": "ServicePrincipal"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "aks",
+        "aksrunid"
       ]
     },
-    {
+    "dns": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "dns",
@@ -177,17 +179,19 @@
         "mode": "Incremental",
         "parameters": {
           "kubeletidentityObjectId": {
-            "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
+            "value": "[reference('aks').identityProfile.kubeletidentity.objectId]"
           }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "7317514902028164465"
+              "templateHash": "16139122293768044752"
             }
           },
           "parameters": {
@@ -199,26 +203,32 @@
           "variables": {
             "dnsZoneContributorRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'befefa01-2a29-4197-83a8-272ff33ce314')]"
           },
-          "resources": [
-            {
+          "resources": {
+            "dnsZone": {
+              "existing": true,
+              "type": "Microsoft.Network/dnsZones",
+              "apiVersion": "2018-05-01",
+              "name": "maffe-maandag.nl"
+            },
+            "dnsZoneContributorRole": {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",
               "scope": "[format('Microsoft.Network/dnsZones/{0}', 'maffe-maandag.nl')]",
-              "name": "[guid(resourceGroup().id, resourceId('Microsoft.Network/dnsZones', 'maffe-maandag.nl'), variables('dnsZoneContributorRoleDefinitionId'))]",
+              "name": "[guid(resourceGroup().id, resourceInfo('dnsZone').id, variables('dnsZoneContributorRoleDefinitionId'))]",
               "properties": {
                 "principalId": "[parameters('kubeletidentityObjectId')]",
                 "roleDefinitionId": "[variables('dnsZoneContributorRoleDefinitionId')]",
                 "principalType": "ServicePrincipal"
               }
             }
-          ]
+          }
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+        "aks"
       ]
     },
-    {
+    "ingress": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "ingress",
@@ -232,10 +242,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "id-run-maffe-maandag"
+            "value": "[resourceInfo('aksrunid').name]"
           },
           "aksName": {
-            "value": "[parameters('clusterName')]"
+            "value": "[resourceInfo('aks').name]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -258,12 +268,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "3029187388790019340"
+              "templateHash": "8274723902430280918"
             }
           },
           "parameters": {
@@ -349,8 +361,8 @@
               ]
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "helmAppInstalls": {
               "copy": {
                 "name": "helmAppInstalls",
                 "count": "[length(parameters('helmApps'))]"
@@ -588,7 +600,7 @@
                 }
               }
             }
-          ],
+          },
           "outputs": {
             "helmOutputs": {
               "type": "array",
@@ -596,7 +608,7 @@
                 "count": "[length(parameters('helmApps'))]",
                 "input": {
                   "appName": "[parameters('helmApps')[copyIndex()].helmAppName]",
-                  "outputs": "[reference(resourceId('Microsoft.Resources/deployments', format('helmInstall-{0}-{1}', parameters('helmApps')[copyIndex()].helmAppName, copyIndex())), '2020-10-01').outputs.commandOutput.value]"
+                  "outputs": "[reference(format('helmAppInstalls[{0}]', copyIndex())).outputs.commandOutput.value]"
                 }
               }
             }
@@ -604,11 +616,11 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "aks",
+        "aksrunid"
       ]
     },
-    {
+    "certmanager": {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
       "name": "certmanager",
@@ -622,10 +634,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "id-run-maffe-maandag"
+            "value": "[resourceInfo('aksrunid').name]"
           },
           "aksName": {
-            "value": "[parameters('clusterName')]"
+            "value": "[resourceInfo('aks').name]"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -648,12 +660,14 @@
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
           "contentVersion": "1.0.0.0",
           "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "3029187388790019340"
+              "templateHash": "8274723902430280918"
             }
           },
           "parameters": {
@@ -739,8 +753,8 @@
               ]
             }
           },
-          "resources": [
-            {
+          "resources": {
+            "helmAppInstalls": {
               "copy": {
                 "name": "helmAppInstalls",
                 "count": "[length(parameters('helmApps'))]"
@@ -978,7 +992,7 @@
                 }
               }
             }
-          ],
+          },
           "outputs": {
             "helmOutputs": {
               "type": "array",
@@ -986,7 +1000,7 @@
                 "count": "[length(parameters('helmApps'))]",
                 "input": {
                   "appName": "[parameters('helmApps')[copyIndex()].helmAppName]",
-                  "outputs": "[reference(resourceId('Microsoft.Resources/deployments', format('helmInstall-{0}-{1}', parameters('helmApps')[copyIndex()].helmAppName, copyIndex())), '2020-10-01').outputs.commandOutput.value]"
+                  "outputs": "[reference(format('helmAppInstalls[{0}]', copyIndex())).outputs.commandOutput.value]"
                 }
               }
             }
@@ -994,27 +1008,425 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "aks",
+        "aksrunid"
+      ]
+    },
+    "kubernetes": {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "kubernetes-deploy",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "kubeConfig": {
+            "value": "[listClusterAdminCredential(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').kubeconfigs[0].value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "languageVersion": "1.9-experimental",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "8748736655529464758"
+            }
+          },
+          "parameters": {
+            "kubeConfig": {
+              "type": "secureString"
+            }
+          },
+          "imports": {
+            "kubernetes": {
+              "provider": "Kubernetes",
+              "version": "1.0.0",
+              "config": {
+                "kubeConfig": "[parameters('kubeConfig')]",
+                "namespace": "default"
+              }
+            }
+          },
+          "resources": {
+            "namespaceApps": {
+              "import": "kubernetes",
+              "type": "core/Namespace@v1",
+              "properties": {
+                "metadata": {
+                  "name": "apps"
+                }
+              }
+            },
+            "shell": {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2020-10-01",
+              "name": "kubernetes-deploy-shell",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "kubeConfig": {
+                    "value": "[parameters('kubeConfig')]"
+                  },
+                  "namespace": {
+                    "value": "[reference('namespaceApps').metadata.name]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "languageVersion": "1.9-experimental",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.12.40.16777",
+                      "templateHash": "18378358009917013418"
+                    }
+                  },
+                  "parameters": {
+                    "kubeConfig": {
+                      "type": "secureString"
+                    },
+                    "namespace": {
+                      "type": "string"
+                    }
+                  },
+                  "imports": {
+                    "kubernetes": {
+                      "provider": "Kubernetes",
+                      "version": "1.0.0",
+                      "config": {
+                        "namespace": "[parameters('namespace')]",
+                        "kubeConfig": "[parameters('kubeConfig')]"
+                      }
+                    }
+                  },
+                  "resources": {
+                    "appsDeployment_shell": {
+                      "import": "kubernetes",
+                      "type": "apps/Deployment@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "shell"
+                        },
+                        "spec": {
+                          "selector": {
+                            "matchLabels": {
+                              "app": "shell"
+                            }
+                          },
+                          "replicas": 1,
+                          "template": {
+                            "metadata": {
+                              "labels": {
+                                "app": "shell"
+                              }
+                            },
+                            "spec": {
+                              "containers": [
+                                {
+                                  "name": "shell",
+                                  "image": "albertstarreveld/mm-shell",
+                                  "ports": [
+                                    {
+                                      "name": "http-port",
+                                      "containerPort": 80
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "coreService_shellService": {
+                      "import": "kubernetes",
+                      "type": "core/Service@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "shell-service"
+                        },
+                        "spec": {
+                          "selector": {
+                            "app": "shell"
+                          },
+                          "ports": [
+                            {
+                              "name": "http-port",
+                              "port": 80,
+                              "targetPort": "http-port",
+                              "protocol": "TCP"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "networkingK8sIoIngress_shellIngressRules": {
+                      "import": "kubernetes",
+                      "type": "networking.k8s.io/Ingress@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "shell-ingress-rules",
+                          "annotations": {
+                            "cert-manager.io/cluster-issuer": "le-cluster-issuer",
+                            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+                          }
+                        },
+                        "spec": {
+                          "ingressClassName": "ingress-nginx",
+                          "rules": [
+                            {
+                              "host": "maffe-maandag.nl",
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/?(.*)",
+                                    "pathType": "Prefix",
+                                    "backend": {
+                                      "service": {
+                                        "name": "shell-service",
+                                        "port": {
+                                          "number": 80
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "host": "www.maffe-maandag.nl",
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/?(.*)",
+                                    "pathType": "Prefix",
+                                    "backend": {
+                                      "service": {
+                                        "name": "shell-service",
+                                        "port": {
+                                          "number": 80
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "tls": [
+                            {
+                              "hosts": [
+                                "www.maffe-maandag.nl",
+                                "maffe-maandag.nl"
+                              ],
+                              "secretName": "shell-cert"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "namespaceApps"
+              ]
+            },
+            "welkom": {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2020-10-01",
+              "name": "kubernetes-deploy-welkom",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "kubeConfig": {
+                    "value": "[parameters('kubeConfig')]"
+                  },
+                  "namespace": {
+                    "value": "[reference('namespaceApps').metadata.name]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "languageVersion": "1.9-experimental",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_EXPERIMENTAL_WARNING": "Symbolic name support in ARM is experimental, and should be enabled for testing purposes only. Do not enable this setting for any production usage, or you may be unexpectedly broken at any time!",
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.12.40.16777",
+                      "templateHash": "18032359985171362128"
+                    }
+                  },
+                  "parameters": {
+                    "kubeConfig": {
+                      "type": "secureString"
+                    },
+                    "namespace": {
+                      "type": "string"
+                    }
+                  },
+                  "imports": {
+                    "kubernetes": {
+                      "provider": "Kubernetes",
+                      "version": "1.0.0",
+                      "config": {
+                        "namespace": "[parameters('namespace')]",
+                        "kubeConfig": "[parameters('kubeConfig')]"
+                      }
+                    }
+                  },
+                  "resources": {
+                    "appsDeployment_welkom": {
+                      "import": "kubernetes",
+                      "type": "apps/Deployment@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "welkom"
+                        },
+                        "spec": {
+                          "selector": {
+                            "matchLabels": {
+                              "app": "welkom"
+                            }
+                          },
+                          "replicas": 1,
+                          "template": {
+                            "metadata": {
+                              "labels": {
+                                "app": "welkom"
+                              }
+                            },
+                            "spec": {
+                              "containers": [
+                                {
+                                  "name": "welkom",
+                                  "image": "albertstarreveld/mm-welkom",
+                                  "ports": [
+                                    {
+                                      "name": "http-port",
+                                      "containerPort": 80
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "coreService_welkomService": {
+                      "import": "kubernetes",
+                      "type": "core/Service@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "welkom-service"
+                        },
+                        "spec": {
+                          "selector": {
+                            "app": "welkom"
+                          },
+                          "ports": [
+                            {
+                              "name": "http-port",
+                              "port": 80,
+                              "targetPort": "http-port",
+                              "protocol": "TCP"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "networkingK8sIoIngress_welkomIngressRules": {
+                      "import": "kubernetes",
+                      "type": "networking.k8s.io/Ingress@v1",
+                      "properties": {
+                        "metadata": {
+                          "name": "welkom-ingress-rules",
+                          "annotations": {
+                            "cert-manager.io/cluster-issuer": "le-cluster-issuer",
+                            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+                          }
+                        },
+                        "spec": {
+                          "ingressClassName": "ingress-nginx",
+                          "rules": [
+                            {
+                              "host": "welkom.maffe-maandag.nl",
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/?(.*)",
+                                    "pathType": "Prefix",
+                                    "backend": {
+                                      "service": {
+                                        "name": "welkom-service",
+                                        "port": {
+                                          "number": 80
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "tls": [
+                            {
+                              "hosts": [
+                                "welkom.maffe-maandag.nl"
+                              ],
+                              "secretName": "welkom-cert"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "namespaceApps"
+              ]
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "aks"
       ]
     }
-  ],
+  },
   "outputs": {
     "certmanagerOutput": {
       "type": "array",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'certmanager'), '2020-10-01').outputs.helmOutputs.value]"
+      "value": "[reference('certmanager').outputs.helmOutputs.value]"
     },
     "ingressOutput": {
       "type": "array",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'ingress'), '2020-10-01').outputs.helmOutputs.value]"
+      "value": "[reference('ingress').outputs.helmOutputs.value]"
     },
     "kubeletIdentityClientId": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.clientId]"
+      "value": "[reference('aks').identityProfile.kubeletidentity.clientId]"
     },
     "controlPlaneFQDN": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').fqdn]"
+      "value": "[reference('aks').fqdn]"
     }
   }
 }
