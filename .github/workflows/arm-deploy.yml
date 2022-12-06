@@ -62,3 +62,17 @@ jobs:
           namespace: 'cert-manager'
           manifests: |
               kubernetes/le-cluster-issuer.yaml
+      
+      - name: Deploy Apps Namespace
+        uses: Azure/k8s-deploy@v3.1
+        with:
+          namespace: 'default'
+          manifests: |
+              kubernetes/apps-ns.yaml
+      - name: Deploy Apps
+        uses: Azure/k8s-deploy@v3.1
+        with:
+          namespace: 'cert-manager'
+          manifests: |
+              kubernetes/shell.yaml
+              kubernetes/welkom.yaml

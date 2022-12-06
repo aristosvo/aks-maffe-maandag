@@ -144,12 +144,12 @@ module certmanager 'modules/helm.bicep' = {
   }
 }
 
-module kubernetes './modules/kubernetes.bicep' = {
-  name: 'kubernetes-deploy'
-  params: {
-    kubeConfig: aks.listClusterAdminCredential().kubeconfigs[0].value
-  }
-}
+// module kubernetes './modules/kubernetes.bicep' = {
+//   name: 'kubernetes-deploy'
+//   params: {
+//     kubeConfig: aks.listClusterAdminCredential().kubeconfigs[0].value
+//   }
+// }
 
 output certmanagerOutput array = certmanager.outputs.helmOutputs
 
