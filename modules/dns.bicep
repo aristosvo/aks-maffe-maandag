@@ -40,3 +40,16 @@ resource recordShell 'Microsoft.Network/dnsZones/A@2018-05-01' = {
     ]
   }
 }
+
+resource recordShellRoot 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+  parent: dnsZone
+  name: '@'
+  properties: {
+    TTL: 3600
+    ARecords: [
+      {
+        ipv4Address: '20.86.245.108'
+      }
+    ]
+  }
+}
