@@ -38,14 +38,13 @@ metadata:
   name: welkom-ingress-rules
   annotations:
     cert-manager.io/cluster-issuer: le-cluster-issuer
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: ingress-nginx
+  ingressClassName: nginx
   rules:
   - host: welkom.maffe-maandag.nl
     http:
       paths:
-      - path: "/?(.*)"
+      - path: "/"
         pathType: Prefix
         backend:
           service:
