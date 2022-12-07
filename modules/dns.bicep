@@ -14,3 +14,29 @@ resource dnsZoneContributorRole 'Microsoft.Authorization/roleAssignments@2022-04
     principalType: 'ServicePrincipal'
   }
 }
+
+resource recordWelkom 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+  parent: dnsZone
+  name: 'welkom'
+  properties: {
+    TTL: 3600
+    ARecords: [
+      {
+        ipv4Address: '20.76.146.233'
+      }
+    ]
+  }
+}
+
+resource recordShell 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+  parent: dnsZone
+  name: 'www'
+  properties: {
+    TTL: 3600
+    ARecords: [
+      {
+        ipv4Address: '20.76.146.233'
+      }
+    ]
+  }
+}
