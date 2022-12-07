@@ -16,4 +16,5 @@ spec:
           hostedZoneName: "maffe-maandag.nl"
           environment: AzurePublicCloud
           managedIdentity:
-            clientID: "17214075-3150-4414-8a30-59c55bb4168d"
+            # az aks show -n aks-maffe-maandag -g rg-maffe-maandag --query "identityProfile.kubeletidentity.clientId" -o tsv
+            clientID: "9af77b08-0267-4f66-aa2f-62dca77b63c7" 
