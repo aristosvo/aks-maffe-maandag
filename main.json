@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "545047062015703491"
+      "templateHash": "12284586807088227489"
     }
   },
   "parameters": {
@@ -187,7 +187,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "12116880200151413389"
+              "templateHash": "4243671667758789414"
             }
           },
           "parameters": {
@@ -232,7 +232,7 @@
                 "TTL": 3600,
                 "ARecords": [
                   {
-                    "ipv4Address": "20.76.146.233"
+                    "ipv4Address": "20.86.245.108"
                   }
                 ]
               }
