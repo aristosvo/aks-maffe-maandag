@@ -22,7 +22,7 @@ resource recordWelkom 'Microsoft.Network/dnsZones/A@2018-05-01' = {
     TTL: 3600
     ARecords: [
       {
-        ipv4Address: '20.76.146.233'
+        ipv4Address: '20.86.245.108'
       }
     ]
   }
