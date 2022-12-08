@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "15810100692961809736"
+      "templateHash": "11233877299475240828"
     }
   },
   "parameters": {
@@ -187,7 +187,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "11329998354228586759"
+              "templateHash": "13810746739248070008"
             }
           },
           "parameters": {
@@ -241,6 +241,32 @@
               "type": "Microsoft.Network/dnsZones/A",
               "apiVersion": "2018-05-01",
               "name": "[format('{0}/{1}', 'maffe-maandag.nl', '@')]",
+              "properties": {
+                "TTL": 3600,
+                "ARecords": [
+                  {
+                    "ipv4Address": "20.86.245.108"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/dnsZones/A",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'api1')]",
+              "properties": {
+                "TTL": 3600,
+                "ARecords": [
+                  {
+                    "ipv4Address": "20.86.245.108"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/dnsZones/A",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'api2')]",
               "properties": {
                 "TTL": 3600,
                 "ARecords": [
