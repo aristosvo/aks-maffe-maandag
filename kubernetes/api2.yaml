@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api2
+spec:
+  selector:
+    matchLabels:
+      app: api2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api2
+    spec:
+      containers:
+        - name: api2
+          image: albertstarreveld/testing.graphstoreapi
+          ports:
+            - name: http-port
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api2-service
+spec:
+  selector:
+    app: api2
+  ports:
+    - name: http-port
+      port: 80
+      targetPort: http-port
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api2-ingress-rules
+  annotations:
+    cert-manager.io/cluster-issuer: le-cluster-issuer
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api2.maffe-maandag.nl
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: api2-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - api2.maffe-maandag.nl
+    secretName: api2-cert

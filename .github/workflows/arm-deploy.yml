@@ -75,7 +75,9 @@ jobs:
       - name: Deploy Apps
         uses: Azure/k8s-deploy@v3.1
         with:
-          namespace: 'cert-manager'
+          namespace: 'apps'
           manifests: |
               kubernetes/shell.yaml
               kubernetes/welkom.yaml
+              kubernetes/api1.yaml
+              kubernetes/api2.yaml
