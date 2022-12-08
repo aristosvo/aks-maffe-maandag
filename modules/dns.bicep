@@ -53,3 +53,29 @@ resource recordShellRoot 'Microsoft.Network/dnsZones/A@2018-05-01' = {
     ]
   }
 }
+
+resource recordApi1 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+  parent: dnsZone
+  name: 'api1'
+  properties: {
+    TTL: 3600
+    ARecords: [
+      {
+        ipv4Address: '20.86.245.108'
+      }
+    ]
+  }
+}
+
+resource recordApi2 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+  parent: dnsZone
+  name: 'api2'
+  properties: {
+    TTL: 3600
+    ARecords: [
+      {
+        ipv4Address: '20.86.245.108'
+      }
+    ]
+  }
+}
