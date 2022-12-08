@@ -88,6 +88,7 @@ module dns 'modules/dns.bicep' = {
   scope: resourceGroup('dns')
   params: {
     kubeletidentityObjectId: aks.properties.identityProfile.kubeletidentity.objectId
+    prefixes: [ '@', 'www', 'welkom', 'api1', 'api2', 'api3', 'api4' ]
   }
 }
 

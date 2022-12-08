@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "11233877299475240828"
+      "templateHash": "11453731822293914334"
     }
   },
   "parameters": {
@@ -178,6 +178,17 @@
         "parameters": {
           "kubeletidentityObjectId": {
             "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
+          },
+          "prefixes": {
+            "value": [
+              "@",
+              "www",
+              "welkom",
+              "api1",
+              "api2",
+              "api3",
+              "api4"
+            ]
           }
         },
         "template": {
@@ -187,13 +198,17 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "13810746739248070008"
+              "templateHash": "4660936911008557883"
             }
           },
           "parameters": {
             "kubeletidentityObjectId": {
               "type": "string",
               "defaultValue": ""
+            },
+            "prefixes": {
+              "type": "array",
+              "defaultValue": []
             }
           },
           "variables": {
@@ -212,61 +227,13 @@
               }
             },
             {
+              "copy": {
+                "name": "record",
+                "count": "[length(parameters('prefixes'))]"
+              },
               "type": "Microsoft.Network/dnsZones/A",
               "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'welkom')]",
-              "properties": {
-                "TTL": 3600,
-                "ARecords": [
-                  {
-                    "ipv4Address": "20.86.245.108"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'www')]",
-              "properties": {
-                "TTL": 3600,
-                "ARecords": [
-                  {
-                    "ipv4Address": "20.86.245.108"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', '@')]",
-              "properties": {
-                "TTL": 3600,
-                "ARecords": [
-                  {
-                    "ipv4Address": "20.86.245.108"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'api1')]",
-              "properties": {
-                "TTL": 3600,
-                "ARecords": [
-                  {
-                    "ipv4Address": "20.86.245.108"
-                  }
-                ]
-              }
-            },
-            {
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', 'api2')]",
+              "name": "[format('{0}/{1}', 'maffe-maandag.nl', parameters('prefixes')[copyIndex()])]",
               "properties": {
                 "TTL": 3600,
                 "ARecords": [

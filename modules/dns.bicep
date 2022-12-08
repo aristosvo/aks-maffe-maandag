@@ -1,5 +1,7 @@
 param kubeletidentityObjectId string = ''
 
+param prefixes array = []
+
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
   name: 'maffe-maandag.nl'
 }
@@ -15,9 +17,9 @@ resource dnsZoneContributorRole 'Microsoft.Authorization/roleAssignments@2022-04
   }
 }
 
-resource recordWelkom 'Microsoft.Network/dnsZones/A@2018-05-01' = {
+resource record 'Microsoft.Network/dnsZones/A@2018-05-01' = [for prefix in prefixes: {
   parent: dnsZone
-  name: 'welkom'
+  name: prefix
   properties: {
     TTL: 3600
     ARecords: [
@@ -26,56 +28,4 @@ resource recordWelkom 'Microsoft.Network/dnsZones/A@2018-05-01' = {
       }
     ]
   }
-}
-
-resource recordShell 'Microsoft.Network/dnsZones/A@2018-05-01' = {
-  parent: dnsZone
-  name: 'www'
-  properties: {
-    TTL: 3600
-    ARecords: [
-      {
-        ipv4Address: '20.86.245.108'
-      }
-    ]
-  }
-}
-
-resource recordShellRoot 'Microsoft.Network/dnsZones/A@2018-05-01' = {
-  parent: dnsZone
-  name: '@'
-  properties: {
-    TTL: 3600
-    ARecords: [
-      {
-        ipv4Address: '20.86.245.108'
-      }
-    ]
-  }
-}
-
-resource recordApi1 'Microsoft.Network/dnsZones/A@2018-05-01' = {
-  parent: dnsZone
-  name: 'api1'
-  properties: {
-    TTL: 3600
-    ARecords: [
-      {
-        ipv4Address: '20.86.245.108'
-      }
-    ]
-  }
-}
-
-resource recordApi2 'Microsoft.Network/dnsZones/A@2018-05-01' = {
-  parent: dnsZone
-  name: 'api2'
-  properties: {
-    TTL: 3600
-    ARecords: [
-      {
-        ipv4Address: '20.86.245.108'
-      }
-    ]
-  }
-}
+}]

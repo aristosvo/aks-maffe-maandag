@@ -79,5 +79,4 @@ jobs:
           manifests: |
               kubernetes/shell.yaml
               kubernetes/welkom.yaml
-              kubernetes/api1.yaml
-              kubernetes/api2.yaml
+              kubernetes/api*.yaml
