@@ -43,6 +43,4 @@ jobs:
         with:
           namespace: 'apps'
           manifests: |
-              kubernetes/apps/shell.yaml
-              kubernetes/apps/welkom.yaml
-              kubernetes/apps/api*.yaml
+              kubernetes/apps
