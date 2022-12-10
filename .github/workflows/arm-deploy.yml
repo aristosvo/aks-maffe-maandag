@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'main.json'
-      - 'kubernetes/**.yaml'
+      - 'kubernetes/cluster/**.yaml'
 
 permissions:
   id-token: write
@@ -16,7 +16,7 @@ env:
   DNS_PREFIX: "zapigezondag"
 
 jobs:
-  build:
+  deploy:
     permissions:
       contents: read
       id-token: write
@@ -52,8 +52,8 @@ jobs:
         with:
           script: |
               core.setFailed('ingress-nginx Helm Chart deployment failed!')
-      
-      # Deploys cert-manager config
+
+      # Deploys AKS config, cluster level
       - name: Set AKS Context
         uses: azure/aks-set-context@v3
         with:
@@ -64,19 +64,10 @@ jobs:
         with:
           namespace: 'cert-manager'
           manifests: |
-              kubernetes/le-cluster-issuer.yaml
-      
+              kubernetes/cluster/cluster-issuer.yaml
       - name: Deploy Apps Namespace
         uses: Azure/k8s-deploy@v3.1
         with:
           namespace: 'default'
           manifests: |
-              kubernetes/apps-ns.yaml
-      - name: Deploy Apps
-        uses: Azure/k8s-deploy@v3.1
-        with:
-          namespace: 'apps'
-          manifests: |
-              kubernetes/shell.yaml
-              kubernetes/welkom.yaml
-              kubernetes/api*.yaml
+              kubernetes/cluster/namespace-apps.yaml
