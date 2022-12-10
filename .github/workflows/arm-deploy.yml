@@ -66,22 +66,9 @@ jobs:
           namespace: 'cert-manager'
           manifests: |
               kubernetes/cluster/cluster-issuer.yaml
-      - name: Deploy External DNS namespace
-        uses: Azure/k8s-deploy@v3.1
-        with:
-          namespace: 'default'
-          manifests: |
-              kubernetes/cluster/namespace-external-dns.yaml
-      - name: Deploy External DNS
-        uses: Azure/k8s-deploy@v3.1
-        with:
-          namespace: 'external-dns'
-          manifests: |
-              kubernetes/cluster/external-dns.yaml
       - name: Deploy Apps Namespace
         uses: Azure/k8s-deploy@v3.1
         with:
           namespace: 'default'
           manifests: |
               kubernetes/cluster/namespace-apps.yaml
-              kubernetes/cluster/namespace-external-dns.yaml

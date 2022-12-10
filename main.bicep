@@ -144,6 +144,26 @@ module certmanager 'modules/helm.bicep' = {
   }
 }
 
+module externalDNS 'modules/helm.bicep' = {
+  name: 'external-dns'
+  params: {
+    useExistingManagedIdentity: true
+    managedIdentityName: aksrunid.name
+    aksName: aks.name
+    location: location
+    helmRepo: 'bitnami'
+    helmRepoURL: 'https://charts.bitnami.com/bitnami'
+    helmApps: [
+      {
+        helmAppName: 'external-dns'
+        helmApp: 'bitnami/external-dns'
+        helmAppParams: '--version 6.12.1 --namespace external-dns --create-namespace --set provider=azure --set azure.resourceGroup=dns --set azure.tenantId=${subscription().tenantId} --set azure.subscriptionId=${subscription().subscriptionId} --set azure.useManagedIdentityExtension=true'
+      }
+    ]
+  }
+}
+// 
+
 // module kubernetes './modules/kubernetes.bicep' = {
 //   name: 'kubernetes-deploy'
 //   params: {
