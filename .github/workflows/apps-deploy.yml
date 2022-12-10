@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'kubernetes/apps/**.yaml'
+      - '.github/workflows/apps-deploy.yml'
 
 permissions:
   id-token: write

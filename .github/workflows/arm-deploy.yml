@@ -6,6 +6,7 @@ on:
     paths:
       - 'main.json'
       - 'kubernetes/cluster/**.yaml'
+      - '.github/workflows/arm-deploy.yml'
 
 permissions:
   id-token: write
