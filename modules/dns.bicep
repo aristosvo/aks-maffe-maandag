@@ -1,7 +1,5 @@
 param kubeletidentityObjectId string = ''
 
-param prefixes array = []
-
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
   name: 'maffe-maandag.nl'
 }
@@ -16,16 +14,3 @@ resource dnsZoneContributorRole 'Microsoft.Authorization/roleAssignments@2022-04
     principalType: 'ServicePrincipal'
   }
 }
-
-resource record 'Microsoft.Network/dnsZones/A@2018-05-01' = [for prefix in prefixes: {
-  parent: dnsZone
-  name: prefix
-  properties: {
-    TTL: 3600
-    ARecords: [
-      {
-        ipv4Address: '20.86.245.108'
-      }
-    ]
-  }
-}]

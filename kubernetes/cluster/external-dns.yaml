@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-config-file
+stringData:
+  azure.json: |
+        {
+          "tenantId": "bceea95d-71b4-41ef-9492-43a1dd9b5708",
+          "subscriptionId": "6eaaf383-01c1-4431-921c-73577a49128d",
+          "resourceGroup": "dns",
+          "useManagedIdentityExtension": true
+        }
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: external-dns
+rules:
+  - apiGroups: [""]
+    resources: ["services","endpoints","pods"]
+    verbs: ["get","watch","list"]
+  - apiGroups: ["extensions","networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get","watch","list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: external-dns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-dns
+subjects:
+  - kind: ServiceAccount
+    name: external-dns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      serviceAccountName: external-dns
+      containers:
+        - name: external-dns
+          image: k8s.gcr.io/external-dns/external-dns:v0.11.0
+          args:
+            - --source=service
+            - --source=ingress
+            - --domain-filter=maffe-maandag.nl # (optional) limit to only example.com domains; change to match the zone created above.
+            - --provider=azure
+            - --azure-resource-group=dns # (optional) use the DNS zones from the tutorial's resource group
+          volumeMounts:
+            - name: azure-config-file
+              mountPath: /etc/kubernetes
+              readOnly: true
+      volumes:
+        - name: azure-config-file
+          secret:
+            secretName: azure-config-file

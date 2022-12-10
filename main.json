@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "11453731822293914334"
+      "templateHash": "17359686692946415815"
     }
   },
   "parameters": {
@@ -178,17 +178,6 @@
         "parameters": {
           "kubeletidentityObjectId": {
             "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
-          },
-          "prefixes": {
-            "value": [
-              "@",
-              "www",
-              "welkom",
-              "api1",
-              "api2",
-              "api3",
-              "api4"
-            ]
           }
         },
         "template": {
@@ -198,17 +187,13 @@
             "_generator": {
               "name": "bicep",
               "version": "0.12.40.16777",
-              "templateHash": "4660936911008557883"
+              "templateHash": "7317514902028164465"
             }
           },
           "parameters": {
             "kubeletidentityObjectId": {
               "type": "string",
               "defaultValue": ""
-            },
-            "prefixes": {
-              "type": "array",
-              "defaultValue": []
             }
           },
           "variables": {
@@ -224,23 +209,6 @@
                 "principalId": "[parameters('kubeletidentityObjectId')]",
                 "roleDefinitionId": "[variables('dnsZoneContributorRoleDefinitionId')]",
                 "principalType": "ServicePrincipal"
-              }
-            },
-            {
-              "copy": {
-                "name": "record",
-                "count": "[length(parameters('prefixes'))]"
-              },
-              "type": "Microsoft.Network/dnsZones/A",
-              "apiVersion": "2018-05-01",
-              "name": "[format('{0}/{1}', 'maffe-maandag.nl', parameters('prefixes')[copyIndex()])]",
-              "properties": {
-                "TTL": 3600,
-                "ARecords": [
-                  {
-                    "ipv4Address": "20.86.245.108"
-                  }
-                ]
               }
             }
           ]
