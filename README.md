@@ -15,3 +15,8 @@ Voor de deployment maken we gebruik van Kubernetes, en specifiek AKS. AKS is [hi
 
 ## GitHub Actions
 Om de Bicep IaC en de applicaties te deployen wordt gebruik gemaakt van GitHub Actions. De GitHub Actions workflows zijn [hier](https://github.com/aristosvo/aks-maffe-maandag/tree/main/.github/workflows) gedefinieerd in YAML.
+
+
+## Wat nu?
+- [Hoe is dit AKS Cluster nou eigenlijk geconfigureerd?](./docs/AKS.md)
+- [Hoe kan ik er voor zorgen dat mijn Micro Frontend wordt getoond?](./docs/LetsDoIt.md)
