@@ -25,3 +25,7 @@ De meeste onderdelen worden via Bicep of Kubernetes Configuratie YAML gedeployed
 | Kubernetes Config (paars)|Alle app componenten, via Kubernetes Configuratie in [deze pipeline](./.github/workflows/apps-deploy.yml)
 
 ![Pipelines](./MaffeMaandag-All%20Components%20incl%20pipeline%20notes.drawio.png)
+
+## Wat nu?
+- [Top](#aks-system-configuratie-overzicht)
+- [Terug naar het Overzicht](../README.md)

@@ -11,3 +11,7 @@
 - [ ] Van de Micro Frontends is de Welkom page gedeployed, maar meer ook niet. We hebben al jullie MF's als deployment nodig in AKS.
 
 ![App Scoped Namespace Pipelines](./MaffeMaandag-Kubernetes%20Apps%20Namespace%20Pipeline.drawio.png)
+
+## Wat nu?
+- [Top](#hoe-deployen-we-jullie-micro-frontends)
+- [Terug naar het Overzicht](../README.md)
