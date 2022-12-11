@@ -5,22 +5,15 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "9535754527509708182"
+      "templateHash": "8156638746218569461"
     }
   },
   "parameters": {
-    "clusterName": {
-      "type": "string",
-      "defaultValue": "aks-maffe-maandag",
-      "metadata": {
-        "description": "The name of the Managed Cluster resource."
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]",
       "metadata": {
-        "description": "The location of the Managed Cluster resource."
+        "description": "The location of all the resources."
       }
     },
     "dnsPrefix": {
@@ -28,142 +21,218 @@
       "metadata": {
         "description": "Optional DNS prefix to use with hosted Kubernetes API server FQDN."
       }
-    },
-    "osDiskSizeGB": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 1023,
-      "minValue": 0,
-      "metadata": {
-        "description": "Disk size (in GB) to provision for each of the agent pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that agentVMSize."
-      }
-    },
-    "agentCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "maxValue": 50,
-      "minValue": 1,
-      "metadata": {
-        "description": "The number of nodes for the cluster."
-      }
-    },
-    "agentVMSize": {
-      "type": "string",
-      "defaultValue": "Standard_D2s_v3",
-      "metadata": {
-        "description": "The size of the Virtual Machine."
-      }
-    },
-    "rbacRolesNeeded": {
-      "type": "array",
-      "defaultValue": [
-        "b24988ac-6180-42a0-ab88-20f7382dd24c",
-        "7f6c6a51-bcf8-42ba-9220-52d62157d7db"
-      ],
-      "metadata": {
-        "description": "An array of Azure RoleIds that are required for the DeploymentScript resource"
-      }
-    },
-    "containerRegistryName": {
-      "type": "string",
-      "defaultValue": "maffemaandag",
-      "metadata": {
-        "description": "The name of our container registry"
-      }
     }
-  },
-  "variables": {
-    "acrPullRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
   },
   "resources": [
     {
-      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-      "apiVersion": "2022-01-31-preview",
-      "name": "id-maffe-maandag",
-      "location": "[parameters('location')]"
-    },
-    {
-      "type": "Microsoft.ContainerService/managedClusters",
-      "apiVersion": "2020-09-01",
-      "name": "[parameters('clusterName')]",
-      "location": "[parameters('location')]",
-      "identity": {
-        "type": "UserAssigned",
-        "userAssignedIdentities": {
-          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag'))]": {}
-        }
-      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "aks",
       "properties": {
-        "dnsPrefix": "[parameters('dnsPrefix')]",
-        "agentPoolProfiles": [
-          {
-            "name": "agentpool",
-            "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
-            "count": "[parameters('agentCount')]",
-            "vmSize": "[parameters('agentVMSize')]",
-            "osType": "Linux",
-            "mode": "System"
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsPrefix": {
+            "value": "[parameters('dnsPrefix')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
-        ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag')]"
-      ]
-    },
-    {
-      "type": "Microsoft.ContainerRegistry/registries",
-      "apiVersion": "2022-02-01-preview",
-      "name": "[parameters('containerRegistryName')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Basic"
-      },
-      "identity": {
-        "type": "SystemAssigned"
-      },
-      "properties": {
-        "adminUserEnabled": true
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.12.40.16777",
+              "templateHash": "3461438422929711880"
+            }
+          },
+          "parameters": {
+            "clusterName": {
+              "type": "string",
+              "defaultValue": "aks-maffe-maandag",
+              "metadata": {
+                "description": "The name of the Managed Cluster resource."
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location of the Managed Cluster resource."
+              }
+            },
+            "dnsPrefix": {
+              "type": "string",
+              "metadata": {
+                "description": "Optional DNS prefix to use with hosted Kubernetes API server FQDN."
+              }
+            },
+            "osDiskSizeGB": {
+              "type": "int",
+              "defaultValue": 0,
+              "maxValue": 1023,
+              "minValue": 0,
+              "metadata": {
+                "description": "Disk size (in GB) to provision for each of the agent pool nodes. This value ranges from 0 to 1023. Specifying 0 will apply the default disk size for that agentVMSize."
+              }
+            },
+            "agentCount": {
+              "type": "int",
+              "defaultValue": 1,
+              "maxValue": 50,
+              "minValue": 1,
+              "metadata": {
+                "description": "The number of nodes for the cluster."
+              }
+            },
+            "agentVMSize": {
+              "type": "string",
+              "defaultValue": "Standard_D2s_v3",
+              "metadata": {
+                "description": "The size of the Virtual Machine."
+              }
+            },
+            "containerRegistryName": {
+              "type": "string",
+              "defaultValue": "maffemaandag",
+              "metadata": {
+                "description": "The name of the Container Registry resource."
+              }
+            },
+            "rbacRolesNeeded": {
+              "type": "array",
+              "defaultValue": [
+                "b24988ac-6180-42a0-ab88-20f7382dd24c",
+                "7f6c6a51-bcf8-42ba-9220-52d62157d7db"
+              ],
+              "metadata": {
+                "description": "An array of Azure RoleIds that are required for the DeploymentScript resource"
+              }
+            }
+          },
+          "variables": {
+            "acrPullRoleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2022-01-31-preview",
+              "name": "id-maffe-maandag",
+              "location": "[parameters('location')]"
+            },
+            {
+              "type": "Microsoft.ContainerService/managedClusters",
+              "apiVersion": "2020-09-01",
+              "name": "[parameters('clusterName')]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag'))]": {}
+                }
+              },
+              "properties": {
+                "dnsPrefix": "[parameters('dnsPrefix')]",
+                "agentPoolProfiles": [
+                  {
+                    "name": "agentpool",
+                    "osDiskSizeGB": "[parameters('osDiskSizeGB')]",
+                    "count": "[parameters('agentCount')]",
+                    "vmSize": "[parameters('agentVMSize')]",
+                    "osType": "Linux",
+                    "mode": "System"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-maffe-maandag')]"
+              ]
+            },
+            {
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2022-02-01-preview",
+              "name": "[parameters('containerRegistryName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "properties": {
+                "adminUserEnabled": true
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('containerRegistryName'))]",
+              "name": "[guid(resourceGroup().id, resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), variables('acrPullRoleDefinitionId'))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]",
+                "roleDefinitionId": "[variables('acrPullRoleDefinitionId')]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
+                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2018-11-30",
+              "name": "id-run-maffe-maandag",
+              "location": "[parameters('location')]"
+            },
+            {
+              "copy": {
+                "name": "rbac",
+                "count": "[length(parameters('rbacRolesNeeded'))]"
+              },
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('clusterName'))]",
+              "name": "[guid(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), parameters('rbacRolesNeeded')[copyIndex()], resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRolesNeeded')[copyIndex()])]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'), '2018-11-30').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+              ]
+            }
+          ],
+          "outputs": {
+            "kubeletIdentityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.clientId]"
+            },
+            "kubeletIdentityObjectId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
+            },
+            "controlPlaneFQDN": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').fqdn]"
+            },
+            "id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+            },
+            "runManagedIdentityName": {
+              "type": "string",
+              "value": "id-run-maffe-maandag"
+            }
+          }
+        }
       }
-    },
-    {
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-04-01",
-      "scope": "[format('Microsoft.ContainerRegistry/registries/{0}', parameters('containerRegistryName'))]",
-      "name": "[guid(resourceGroup().id, resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), variables('acrPullRoleDefinitionId'))]",
-      "properties": {
-        "principalId": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]",
-        "roleDefinitionId": "[variables('acrPullRoleDefinitionId')]",
-        "principalType": "ServicePrincipal"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.ContainerRegistry/registries', parameters('containerRegistryName'))]",
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
-      "apiVersion": "2018-11-30",
-      "name": "id-run-maffe-maandag",
-      "location": "[parameters('location')]"
-    },
-    {
-      "copy": {
-        "name": "rbac",
-        "count": "[length(parameters('rbacRolesNeeded'))]"
-      },
-      "type": "Microsoft.Authorization/roleAssignments",
-      "apiVersion": "2022-04-01",
-      "scope": "[format('Microsoft.ContainerService/managedClusters/{0}', parameters('clusterName'))]",
-      "name": "[guid(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), parameters('rbacRolesNeeded')[copyIndex()], resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'))]",
-      "properties": {
-        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', parameters('rbacRolesNeeded')[copyIndex()])]",
-        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag'), '2018-11-30').principalId]",
-        "principalType": "ServicePrincipal"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
-      ]
     },
     {
       "type": "Microsoft.Resources/deployments",
@@ -177,7 +246,7 @@
         "mode": "Incremental",
         "parameters": {
           "kubeletidentityObjectId": {
-            "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.objectId]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.kubeletIdentityObjectId.value]"
           }
         },
         "template": {
@@ -215,7 +284,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
       ]
     },
     {
@@ -232,10 +301,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "id-run-maffe-maandag"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "[parameters('clusterName')]"
+            "value": "aks"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -604,8 +673,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
       ]
     },
     {
@@ -622,10 +690,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "id-run-maffe-maandag"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "[parameters('clusterName')]"
+            "value": "aks"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -994,8 +1062,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
       ]
     },
     {
@@ -1012,10 +1079,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "id-run-maffe-maandag"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "[parameters('clusterName')]"
+            "value": "aks"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1384,8 +1451,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName'))]",
-        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'id-run-maffe-maandag')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
       ]
     }
   ],
@@ -1400,11 +1466,11 @@
     },
     "kubeletIdentityClientId": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').identityProfile.kubeletidentity.clientId]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.kubeletIdentityClientId.value]"
     },
     "controlPlaneFQDN": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.ContainerService/managedClusters', parameters('clusterName')), '2020-09-01').fqdn]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.controlPlaneFQDN.value]"
     }
   }
 }
