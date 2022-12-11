@@ -5,7 +5,7 @@ param location string = resourceGroup().location
 param dnsPrefix string
 
 module aks 'modules/aks.bicep' = {
-  name: 'aks'
+  name: 'aks-maffe-maandag'
   params: {
     dnsPrefix: dnsPrefix
     location: location

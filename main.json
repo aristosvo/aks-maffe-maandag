@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "8156638746218569461"
+      "templateHash": "11498305455600134592"
     }
   },
   "parameters": {
@@ -27,7 +27,7 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2020-10-01",
-      "name": "aks",
+      "name": "aks-maffe-maandag",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
@@ -246,7 +246,7 @@
         "mode": "Incremental",
         "parameters": {
           "kubeletidentityObjectId": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.kubeletIdentityObjectId.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.kubeletIdentityObjectId.value]"
           }
         },
         "template": {
@@ -284,7 +284,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag')]"
       ]
     },
     {
@@ -301,10 +301,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "aks"
+            "value": "aks-maffe-maandag"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -673,7 +673,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag')]"
       ]
     },
     {
@@ -690,10 +690,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "aks"
+            "value": "aks-maffe-maandag"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1062,7 +1062,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag')]"
       ]
     },
     {
@@ -1079,10 +1079,10 @@
             "value": true
           },
           "managedIdentityName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.runManagedIdentityName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.runManagedIdentityName.value]"
           },
           "aksName": {
-            "value": "aks"
+            "value": "aks-maffe-maandag"
           },
           "location": {
             "value": "[parameters('location')]"
@@ -1451,7 +1451,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'aks')]"
+        "[resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag')]"
       ]
     }
   ],
@@ -1466,11 +1466,11 @@
     },
     "kubeletIdentityClientId": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.kubeletIdentityClientId.value]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.kubeletIdentityClientId.value]"
     },
     "controlPlaneFQDN": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks'), '2020-10-01').outputs.controlPlaneFQDN.value]"
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'aks-maffe-maandag'), '2020-10-01').outputs.controlPlaneFQDN.value]"
     }
   }
 }
