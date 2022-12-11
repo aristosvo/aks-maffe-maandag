@@ -28,4 +28,5 @@ De meeste onderdelen worden via Bicep of Kubernetes Configuratie YAML gedeployed
 
 ## Wat nu?
 - [Top](#aks-system-configuratie-overzicht)
+- [Hoe kan ik er voor zorgen dat mijn Micro Frontend wordt getoond?](./LetsDoIt.md)
 - [Terug naar het Overzicht](../README.md)
