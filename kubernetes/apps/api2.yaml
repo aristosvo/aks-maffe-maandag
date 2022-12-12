@@ -15,6 +15,7 @@ spec:
       containers:
         - name: api2
           image: albertstarreveld/testing.graphstoreapi
+          imagePullPolicy: Always
           ports:
             - name: http-port
               containerPort: 80
