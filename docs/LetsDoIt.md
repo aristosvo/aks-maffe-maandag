@@ -47,7 +47,9 @@ We gaan in eerste instantie zorgen dat de containers beschikbaar worden. Wie gaa
             TARGET_DIR_BUILD: ./app
             TARGET_DOCKER_FILE: Dockerfile.app
   ```
+
 </details>
+
 ## Wat nu?
 - [Top](#hoe-deployen-we-jullie-micro-frontends)
 - [Ff kijken wat het resultaat is natuurlijk!](https://www.maffe-maandag.nl)
