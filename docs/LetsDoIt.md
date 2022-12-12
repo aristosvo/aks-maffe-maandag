@@ -21,7 +21,11 @@ We gaan in eerste instantie zorgen dat de containers beschikbaar worden. Wie gaa
 
   ```yaml
   name: Build Containers and push to ACR
-  on: [push]
+  on:
+    push:
+      branches: [main]
+      # paths:
+      #   - 'app'
 
   permissions:
         id-token: write
