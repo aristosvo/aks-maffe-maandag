@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: welkom
-          image: maffemaandag.azurecr.io/welkom
+          image: maffemaandag.azurecr.io/welkom:3
           ports:
             - name: http-port
               containerPort: 80
