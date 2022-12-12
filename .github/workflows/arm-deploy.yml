@@ -40,7 +40,7 @@ jobs:
           az deployment group create --resource-group ${{ env.RESOURCE_GROUP }} --template-uri https://raw.githubusercontent.com/aristosvo/aks-maffe-maandag/main/main.json -p dnsPrefix=${{ env.DNS_PREFIX }} -o none
           echo EXIT_CERTMANAGER=`az deployment group show -g ${{ env.RESOURCE_GROUP }} -n main --query 'properties.outputs.certmanagerOutput.value[0].outputs[0].CommandOutput.exitCode'` >> $GITHUB_ENV
           echo EXIT_INGRESS=`az deployment group show -g ${{ env.RESOURCE_GROUP }} -n main --query 'properties.outputs.ingressOutput.value[0].outputs[0].CommandOutput.exitCode'` >> $GITHUB_ENV
-          echo EXIT_SUCCESS=0 >> $GITHUB_ENV
+          echo EXIT_EXTERNALDNS=`az deployment group show -g ${{ env.RESOURCE_GROUP }} -n main --query 'properties.outputs.externalDNSOutput.value[0].outputs[0].CommandOutput.exitCode'` >> $GITHUB_ENV
       - name: Helm Chart Check cert-manager
         if: ${{ env.EXIT_CERTMANAGER != '0' }}
         uses: actions/github-script@v3
@@ -53,6 +53,12 @@ jobs:
         with:
           script: |
               core.setFailed('ingress-nginx Helm Chart deployment failed!')
+      - name: Helm Chart Check external-dns
+        if: ${{ env.EXIT_EXTERNALDNS != '0' }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('external-dns Helm Chart deployment failed!')
 
       # Deploys AKS config, cluster level
       - name: Set AKS Context

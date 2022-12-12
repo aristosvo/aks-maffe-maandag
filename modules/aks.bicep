@@ -84,17 +84,17 @@ resource acrPullRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-resource aksrunid 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+resource aksrunidentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: 'id-run-maffe-maandag'
   location: location
 }
 
 resource rbac 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for roleDefId in rbacRolesNeeded: {
-  name: guid(aks.id, roleDefId, aksrunid.id)
+  name: guid(aks.id, roleDefId, aksrunidentity.id)
   scope: aks
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefId)
-    principalId: aksrunid.properties.principalId
+    principalId: aksrunidentity.properties.principalId
     principalType: 'ServicePrincipal'
   }
 }]
@@ -107,4 +107,4 @@ output controlPlaneFQDN string = aks.properties.fqdn
 
 output id string = aks.id
 
-output runManagedIdentityName string = aksrunid.name
+output runManagedIdentityName string = aksrunidentity.name

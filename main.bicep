@@ -89,6 +89,8 @@ output certmanagerOutput array = certmanager.outputs.helmOutputs
 
 output ingressOutput array = ingress.outputs.helmOutputs
 
+output externalDNSOutput array = externalDNS.outputs.helmOutputs
+
 output kubeletIdentityClientId string = aks.outputs.kubeletIdentityClientId
 
 output controlPlaneFQDN string = aks.outputs.controlPlaneFQDN

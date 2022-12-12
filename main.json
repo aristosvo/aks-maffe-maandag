@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.12.40.16777",
-      "templateHash": "11498305455600134592"
+      "templateHash": "5471600470193942245"
     }
   },
   "parameters": {
@@ -1463,6 +1463,10 @@
     "ingressOutput": {
       "type": "array",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', 'ingress'), '2020-10-01').outputs.helmOutputs.value]"
+    },
+    "externalDNSOutput": {
+      "type": "array",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'external-dns'), '2020-10-01').outputs.helmOutputs.value]"
     },
     "kubeletIdentityClientId": {
       "type": "string",
