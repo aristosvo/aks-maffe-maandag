@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: boksbal
+spec:
+  selector:
+    matchLabels:
+      app: boksbal
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: boksbal
+    spec:
+      containers:
+        - name: boksbal
+          image: maffemaandag.azurecr.io/boksbal:3
+          ports:
+            - name: http-port
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: boksbal-service
+spec:
+  selector:
+    app: boksbal
+  ports:
+    - name: http-port
+      port: 80
+      targetPort: http-port
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: boksbal-ingress-rules
+  annotations:
+    cert-manager.io/cluster-issuer: le-cluster-issuer
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: boksbal.maffe-maandag.nl
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: boksbal-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - boksbal.maffe-maandag.nl
+    secretName: boksbal-cert
