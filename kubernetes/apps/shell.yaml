@@ -15,6 +15,7 @@ spec:
       containers:
         - name: shell
           image: albertstarreveld/mm-shell
+          imagePullPolicy: Always
           ports:
             - name: http-port
               containerPort: 80
