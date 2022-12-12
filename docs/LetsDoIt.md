@@ -54,6 +54,10 @@ We gaan in eerste instantie zorgen dat de containers beschikbaar worden. Wie gaa
 
 </details>
 
+## Let's do it! (2)
+
+We moeten de applicatie deployments definieren voor de verschillende MF en de bestaande Shell deployment aanpassen. Wie gaat dit doen en op welke manier?
+
 ## Wat nu?
 - [Top](#hoe-deployen-we-jullie-micro-frontends)
 - [Ff kijken wat het resultaat is natuurlijk!](https://www.maffe-maandag.nl)
