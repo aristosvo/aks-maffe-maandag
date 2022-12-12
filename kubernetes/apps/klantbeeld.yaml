@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klantbeeld
+spec:
+  selector:
+    matchLabels:
+      app: klantbeeld
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: klantbeeld
+    spec:
+      containers:
+        - name: klantbeeld
+          image: maffemaandag.azurecr.io/klantbeeld:2
+          ports:
+            - name: http-port
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: klantbeeld-service
+spec:
+  selector:
+    app: klantbeeld
+  ports:
+    - name: http-port
+      port: 80
+      targetPort: http-port
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: klantbeeld-ingress-rules
+  annotations:
+    cert-manager.io/cluster-issuer: le-cluster-issuer
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: klantbeeld.maffe-maandag.nl
+    http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: klantbeeld-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - klantbeeld.maffe-maandag.nl
+    secretName: klantbeeld-cert
