@@ -12,6 +12,42 @@
 
 ![App Scoped Namespace Pipelines](./MaffeMaandag-Kubernetes-Apps-Namespace-Pipeline.drawio.png)
 
+## Let's do it! (1)
+
+We gaan in eerste instantie zorgen dat de containers beschikbaar worden. Wie gaat dit doen en op welke manier?
+
+<details>
+  <summary>Example GitHub Action Docker push with Federated Identity</summary>
+
+  ```yaml
+  name: Build Containers and push to ACR
+  on: [push]
+
+  permissions:
+        id-token: write
+        contents: read
+  jobs: 
+    build-and-deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: 'Az CLI login'
+          uses: azure/login@v1
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    
+        - name: docker login, build and push
+          run: |
+            az acr login -n ${{ secrets.ACR }} 
+            docker build ${{ env.TARGET_DIR_BUILD }} -t ${{ secrets.ACR }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+            docker push ${{ secrets.ACR }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+          env:
+            IMAGE_NAME: example_image_name
+            TARGET_DIR_BUILD: ./app
+            TARGET_DOCKER_FILE: Dockerfile.app
+  ```
+</details>
 ## Wat nu?
 - [Top](#hoe-deployen-we-jullie-micro-frontends)
 - [Ff kijken wat het resultaat is natuurlijk!](https://www.maffe-maandag.nl)
