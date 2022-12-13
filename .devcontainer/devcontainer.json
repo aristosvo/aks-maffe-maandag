@@ -8,11 +8,17 @@
   },
   "extensions": [
     "ms-azuretools.vscode-bicep",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "angular.ng-template",
+    "nrwl.angular-console",
+    "firsttris.vscode-jest-runner",
+    "dbaeumer.vscode-eslint"
   ],
+  "postCreateCommand": "npm i nx -g",
   "postStartCommand": "az bicep install",
   "features": {
     "azure-cli": "latest",
-    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
   }
 }
